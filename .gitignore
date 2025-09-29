@@ -1,0 +1,41 @@
+# Python cache / bytecode
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+
+# Virtual environment
+.venv/
+venv/
+ENV/
+
+# Environment variables
+.env
+
+# IDE settings
+.idea/
+.vscode/
+
+# OS specific files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Build / packaging
+build/
+dist/
+*.egg-info/
+.eggs/
+
+# Ignore accidental shell command files
+eval*
+"eval*"
+
+# Ignore accidental files
+*.pub
+*.pid
+
+
