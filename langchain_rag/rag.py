@@ -1,5 +1,4 @@
 import os
-import uuid
 
 from dotenv import load_dotenv
 from langchain.chat_models import init_chat_model
@@ -159,9 +158,9 @@ def build_rag_chain(retriever, prompt, llm):
     return rag_chain
 
 
-def build_contenxualize_question_prompt():
+def build_contextualize_question_prompt():
 
-    contenxualize_qa_prompt = (
+    contextualize_qa_prompt = (
         "Given a chat history and the latest user question "
         "which might reference context in the chat history, "
         "formulate a standalone question which can be understood "
@@ -169,19 +168,19 @@ def build_contenxualize_question_prompt():
         "just reformulate it if needed and otherwise return it as is."
     )
 
-    contenxualize_question_prompt = ChatPromptTemplate.from_messages(
+    contextualize_question_prompt = ChatPromptTemplate.from_messages(
         [
-            ("system", contenxualize_qa_prompt),
+            ("system", contextualize_qa_prompt),
             MessagesPlaceholder(variable_name="chat_history"),
             ("human", "{input}")
         ]
     )
-    return contenxualize_question_prompt
+    return contextualize_question_prompt
 
 
-def history_aware_retriever(llm, retriever, contenxualize_question_prompt):
+def history_aware_retriever(llm, retriever, contextualize_question_prompt):
     retriever = create_history_aware_retriever(
-        llm, retriever, contenxualize_question_prompt
+        llm, retriever, contextualize_question_prompt
     )
 
     #history_aware_retriever.invoke({"input": question2, "chat_history": chat_history})
@@ -214,8 +213,8 @@ def ask_rag(question, session_id=None):
     prompt = create_chat_prompt()
     # rag_chain = build_rag_chain(retriever, prompt, llm)
 
-    contenxualize_question_prompt = build_contenxualize_question_prompt()
-    ha_retriever = history_aware_retriever(llm, retriever, contenxualize_question_prompt)
+    contextualize_question_prompt = build_contextualize_question_prompt()
+    ha_retriever = history_aware_retriever(llm, retriever, contextualize_question_prompt)
     question_answer_chain = build_conversational_rag_chain(llm)
     conversational_rag_chain = create_retrieval_chain(ha_retriever, question_answer_chain)
 
