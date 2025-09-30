@@ -6,9 +6,9 @@ class Data(BaseModel):
     id: str
     roomId: str
     personId: str
-    files: List[str]
+    files: List[str] = []
 
-class MessagePayload(BaseModel):
+class WebexMessagePayload(BaseModel):
     data: Data
 
 class Message(BaseModel):

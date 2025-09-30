@@ -4,7 +4,9 @@ import nest_asyncio
 import uvicorn
 from fastapi import FastAPI
 
-from webex_bot import webex_bot_router
+from langchain_rag import rag_router
+from telegram_bot.controller import telegram_bot_router
+from webex_bot.controller import webex_bot_router
 
 
 # Press ⌃R to execute it or replace it with your code.
@@ -24,7 +26,8 @@ if __name__ == '__main__':
 
     app = FastAPI()
     app.include_router(webex_bot_router)
-    # app.include_router(rag_router)
+    app.include_router(rag_router)
+    app.include_router(telegram_bot_router)
 
 
 
