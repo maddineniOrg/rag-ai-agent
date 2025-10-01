@@ -7,20 +7,16 @@ telegram_bot_router = APIRouter()
 
 @telegram_bot_router.post("/telegram/message", response_class=PlainTextResponse)
 def handle_message(payload: TelegramMessagePayload):
-
-    # data = await request.json()
-    # payload = TelegramMessagePayload(**(data))
-    if payload.my_chat_member:
+    if payload and payload.my_chat_member:
         status = payload.my_chat_member.new_chat_member.status
         is_bot = payload.my_chat_member.new_chat_member.user.is_bot
         if is_bot or status == "kicked":
             print("Ignoring bot message or kicked event")
-            return "OK"
+            return "Message Ignored"
     test = payload.message.text
     print(test)
     try:
-        pass
         process_message(payload.message)
     except Exception as e:
         print(e)
-    return "OK"
+    return "Message Processed"

@@ -15,11 +15,10 @@ def handle_message(
     if(payload is None):
         return "Invalid Payload"
     message = get_message(payload.data.id)
-    documents = get_files(payload.data.files)
     print(message)
     if(message.personEmail.endswith("@webex.bot")):
         return None
-    process_message(message, documents)
+    process_message(message)
     return "OK"
 
 

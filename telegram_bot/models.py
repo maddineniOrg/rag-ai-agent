@@ -1,16 +1,18 @@
+from typing import Optional
+
 from pydantic import BaseModel, Field
 
 
 class Chat(BaseModel):
     first_name: str
-    last_name: str = None
+    last_name: Optional[str] = None
     username: str
     id: int
     type: str
 
 class FromUser(BaseModel):
     first_name: str
-    last_name: str = None
+    last_name: Optional[str] = None
     username: str
     id: int
     is_bot: bool
@@ -33,7 +35,7 @@ class MyChatMember(BaseModel):
     old_chat_member: ChatMember
 
 class TelegramMessagePayload(BaseModel):
-    my_chat_member: MyChatMember = None
-    message: Message = None
+    my_chat_member: Optional[MyChatMember] = None
+    message: Optional[Message] = None
     update_id: int
 

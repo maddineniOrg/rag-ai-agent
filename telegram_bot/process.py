@@ -8,17 +8,17 @@ from telegram_bot.models import Message
 
 def process_message(message: Message):
     question = message.text
-    chatId = message.chat.id
+    chat_id = message.chat.id
     try:
-        session_id = get_session_id(chatId)
+        session_id = get_session_id(chat_id)
         answer = ask_rag(question, session_id)
         if (answer):
-            send_message(chatId, answer)
+            send_message(chat_id, answer)
         else:
             message = "Unable to Process your Question, Due to Internal Error"
-            send_message(chatId, message)
+            send_message(chat_id, message)
     except GoogleGenerativeAIError as e:
         print(e)
         message = e.args[0]
-        send_message(chatId, message)
+        send_message(chat_id, message)
         return None
