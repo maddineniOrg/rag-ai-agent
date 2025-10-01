@@ -1,7 +1,6 @@
 import uvicorn
 from fastapi import FastAPI
 
-import webex_bot
 from webex_bot.controller import webex_bot_router
 
 if __name__ == "__main__":

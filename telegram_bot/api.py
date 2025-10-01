@@ -16,7 +16,7 @@ def send_message(chat_id, text):
         "text": text
     }
     with httpx.Client() as client:
-        response = client.post(url, params=payload)
+        response = client.post(url, params=params)
         if response.status_code == 200:
             print("Message sent successfully")
         else:

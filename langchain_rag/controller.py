@@ -7,7 +7,7 @@ rag_router = APIRouter()
 
 
 # chat endpoint
-@rag_router.post("/chat", response_class=PlainTextResponse)
+@rag_router.post("/rag/chat", response_class=PlainTextResponse)
 def chat_with_rag(question: str, chat_model: str = "", session_id: str = ""):
     chat_history = []
     response = ask_rag(question)

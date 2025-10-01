@@ -12,7 +12,7 @@ from dotenv import load_dotenv
 from webex_bot.models import Message, File
 
 load_dotenv()
-BOT_ACCESS_TOKEN= os.getenv("WEBEX_API_KEY")
+WEBEX_BOT_TOKEN= os.getenv("WEBEX_BOT_TOKEN")
 WEBEX_API_URL = os.getenv("WEBEX_API_URL")
 
 def get_message(message_id: str):
@@ -20,7 +20,7 @@ def get_message(message_id: str):
     Fetch messages from a Webex room using Webex REST API
     """
     headers = {
-        "Authorization": f"Bearer {BOT_ACCESS_TOKEN}",
+        "Authorization": f"Bearer {WEBEX_BOT_TOKEN}",
         "Content-Type": "application/json"
     }
 
@@ -44,7 +44,7 @@ def send_message(room_id: str, text: str):
     Send a message to a Webex room using Webex REST API
     """
     headers = {
-        "Authorization": f"Bearer {BOT_ACCESS_TOKEN}",
+        "Authorization": f"Bearer {WEBEX_BOT_TOKEN}",
         "Content-Type": "application/json"
     }
 
@@ -63,7 +63,7 @@ def send_message(room_id: str, text: str):
             return None
 
 def get_files(file_urls: list, save_folder: str = None):
-    headers = {"Authorization": f"Bearer {BOT_ACCESS_TOKEN}", "Content-Type": "application/json"}
+    headers = {"Authorization": f"Bearer {WEBEX_BOT_TOKEN}", "Content-Type": "application/json"}
     files = []
 
     with httpx.Client() as client:
