@@ -13,8 +13,8 @@ def handle_message(payload: TelegramMessagePayload):
         if is_bot or status == "kicked":
             print("Ignoring bot message or kicked event")
             return "Message Ignored"
-    test = payload.message.text
-    print(test)
+    text = payload.message.text
+    print(text)
     try:
         process_message(payload.message)
     except Exception as e:
