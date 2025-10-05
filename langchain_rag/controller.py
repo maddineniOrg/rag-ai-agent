@@ -12,3 +12,8 @@ llm = LLM()
 def chat_with_rag(question: str, chat_model: str = "", session_id: str = ""):
     response = llm.ask_rag(question)
     return response
+
+@rag_router.post("/rag/files", response_class=PlainTextResponse)
+def upload_files(files):
+    pass
+    # TO DO
