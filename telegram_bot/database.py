@@ -5,6 +5,7 @@ from connection import get_db_connection
 
 def create_chat_details():
     connection = get_db_connection()
+    print("This is connection", connection)
     cursor = connection.cursor()
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS chat_details(
@@ -18,6 +19,7 @@ def create_chat_details():
     connection.commit()
     cursor.close()
     connection.close()
+    print("Returning from create_chat_details")
 
 def insert_chat_details(chat_id, session_id):
     connection = get_db_connection()
