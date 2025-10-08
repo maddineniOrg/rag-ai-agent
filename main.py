@@ -1,12 +1,12 @@
 # This is a sample Python script.
 # from pyngrok import ngrok
-import nest_asyncio
 import uvicorn
 from fastapi import FastAPI
 
 from langchain_rag import rag_router
 from telegram_bot.controller import telegram_bot_router
 from webex_bot.controller import webex_bot_router
+from rag import router
 
 
 # Press ⌃R to execute it or replace it with your code.
@@ -21,13 +21,14 @@ def print_hi(name):
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
     print_hi('PyCharm')
-    nest_asyncio.apply()
+    # nest_asyncio.apply()
 
 
     app = FastAPI()
     app.include_router(webex_bot_router)
     app.include_router(rag_router)
     app.include_router(telegram_bot_router)
+    app.include_router(router)
 
 
 

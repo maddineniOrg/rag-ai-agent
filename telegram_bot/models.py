@@ -39,3 +39,7 @@ class TelegramMessagePayload(BaseModel):
     message: Optional[Message] = None
     update_id: int
 
+class RagResponse(BaseModel):
+    answer: str
+    session_id: str
+    model: str

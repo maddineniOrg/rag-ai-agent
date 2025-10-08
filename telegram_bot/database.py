@@ -19,15 +19,13 @@ def create_chat_details():
     cursor.close()
     connection.close()
 
-def insert_chat_details(chat_id):
+def insert_chat_details(chat_id, session_id):
     connection = get_db_connection()
     cursor = connection.cursor()
-    session_id = str(uuid.uuid4())
     cursor.execute("INSERT INTO chat_details (chat_id, session_id) VALUES (%s, %s)", (chat_id, session_id))
     connection.commit()
     cursor.close()
     connection.close()
-    return session_id
 
 def get_session_id(chat_id):
     connection = get_db_connection()
@@ -38,6 +36,6 @@ def get_session_id(chat_id):
     connection.close()
     if row:
         return row[0]
-    return insert_chat_details(chat_id)
+    return None
 
 create_chat_details()

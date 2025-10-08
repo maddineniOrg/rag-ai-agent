@@ -19,7 +19,7 @@ class RagDB:
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             )
         """
-                       )
+        )
 
     def insert_application_logs(self, session_id, user_query, gpt_response, model="gemini-2.0-flash-lite"):
         connection = get_db_connection()
