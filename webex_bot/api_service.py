@@ -33,13 +33,17 @@ def get_message(message_id: str):
         response = client.get(url, headers=headers)
         if response.status_code == 200:
             payload_dict = response.json()
-            message = Message(**payload_dict)
-            return message
+            try:
+                message = Message(**payload_dict)
+                return message
+            except Exception as e:
+                print(f"Error parsing message data: {e}")
+                return None
         else:
             print(f"Error fetching the message: {response.text}")
             return None
 
-def send_message(room_id: str, text: str):
+def send_message(room_id: str, text: str, parent_id: str = None) -> str:
     """
     Send a message to a Webex room using Webex REST API
     """
@@ -53,18 +57,45 @@ def send_message(room_id: str, text: str):
         "markdown": text,
     }
 
+    # Add parent_id if replying to a specific message
+    if parent_id:
+        payload["parentId"] = parent_id
+
     url = f"{WEBEX_API_URL}/messages"
     with httpx.Client() as client:
         response = client.post(url, headers=headers, json=payload)
         if response.status_code == 200:
-            return response.json()   # Webex response (dict with id, roomId, text, etc.)
+            # return message_id
+            response_json = response.json()
+            return response_json.get("id")
         else:
             print("Error sending the message:", response.status_code, response.text)
             return None
 
-def get_files(file_urls: list, save_folder: str = None):
+
+def delete_message(message_id: str):
+    """
+    Delete a message from a Webex room using Webex REST API
+    """
+    headers = {
+        "Authorization": f"Bearer {WEBEX_BOT_TOKEN}",
+        "Content-Type": "application/json"
+    }
+    url = f"{WEBEX_API_URL}/messages/{message_id}"
+    with httpx.Client() as client:
+        response = client.delete(url, headers=headers)
+        if response.status_code == 204:
+            print("Message deleted successfully")
+            return True
+        else:
+            print("Error deleting the message:", response.status_code, response.text)
+            return False
+
+
+def get_files(file_urls: list) -> list[File]:
     headers = {"Authorization": f"Bearer {WEBEX_BOT_TOKEN}", "Content-Type": "application/json"}
     files = []
+    accepted_extensions = {".pdf", ".docx", ".html"}
 
     with httpx.Client() as client:
         for url in file_urls:
@@ -77,15 +108,17 @@ def get_files(file_urls: list, save_folder: str = None):
 
             content = response.content
             filename = extract_filename(response.headers, fallback=file_id)
-            text = extract_text_from_file(filename, content)
-            save_file(content, filename, save_folder)
+            ext = os.path.splitext(filename)[1].lower()
+            if ext not in accepted_extensions:
+                print(f"Ignoring unsupported file type: {filename}")
+                continue
 
             file_model = File(
                 id=file_id,
+                name=filename,
                 fileType=filename.split('.')[-1],
                 fileSize=len(content),
-                content=base64.b64encode(content).decode("utf-8"),  # store as base64 string
-                text=text or "",
+                content=response.content,
                 downloadUrl=url,
                 created=datetime.datetime.utcnow().isoformat()
             )
