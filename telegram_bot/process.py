@@ -65,7 +65,7 @@ def ask_rag(question: str, session_id: str = None) -> RagResponse:
         "session_id": session_id if session_id else "",
         "model": "gemini-2.0-flash-lite"
     }
-    with httpx.Client() as client:
+    with httpx.Client(timeout=30.0) as client:
         response = client.post(url, json=payload)
         if response.status_code == 200:
             # Map the JSON to RagResponse directly
