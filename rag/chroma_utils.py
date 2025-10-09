@@ -3,7 +3,7 @@ from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_google_genai import GoogleGenerativeAIEmbeddings
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_openai import OpenAIEmbeddings
-from langchain_chroma import Chroma
+from langchain_community.vectorstores import Chroma
 from typing import List
 from langchain_core.documents import Document
 import os
@@ -14,7 +14,7 @@ set_langsmith_environment()
 set_google_environment()
 
 # Initialize text splitter and embedding function
-text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=200, length_function=len)
+text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=20, length_function=len)
 embedding_function = GoogleGenerativeAIEmbeddings(model="models/gemini-embedding-001")
 # embedding_function = HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2")
 
