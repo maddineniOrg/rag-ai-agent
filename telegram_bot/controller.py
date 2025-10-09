@@ -2,7 +2,7 @@ from fastapi import APIRouter, Request
 from starlette.responses import PlainTextResponse
 from telegram_bot.models import TelegramMessagePayload
 from telegram_bot.process import process_message
-from telegram_bot.api import send_message
+from telegram_bot.api import send_message, download_telegram_file
 
 telegram_bot_router = APIRouter()
 
@@ -16,10 +16,7 @@ def handle_message(payload: TelegramMessagePayload):
             return "Message Ignored"
     text = payload.message.text
     print(text)
-    if(text is None or text.strip() == ""):
-        print("Ignoring non-text message")
-        return "Message Ignored"
-    elif(text == "/start"):
+    if(text == "/start"):
         message = "Hello! I am your AI assistant. Ask me anything!"
         chat_id = payload.message.chat.id
         send_message(chat_id, message)
