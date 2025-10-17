@@ -8,3 +8,6 @@ langchain_chroma
 python-multipart
 fastapi
 uvicorn
+pytest
+streamlit
+watchdog
