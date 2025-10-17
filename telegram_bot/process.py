@@ -4,7 +4,6 @@ import io
 import httpx
 from langchain_google_genai._common import GoogleGenerativeAIError
 
-from langchain_rag.rag import LLM
 from telegram_bot.api import send_message, download_telegram_file
 from telegram_bot.database import get_session_id, insert_chat_details
 from telegram_bot.models import Message, RagResponse, Document
@@ -18,44 +17,49 @@ def process_message(message: Message):
     document = message.document
     message_id = message.message_id
     if document:
-        file_content = download_telegram_file(document.file_id)
-        document.file_content = file_content
-        print(f"Downloaded file of size: {len(file_content) if file_content else 'None'} bytes")
+        handle_document_upload(document, chat_id, message_id)
+    elif question:
+        handle_question(question, chat_id, message_id)
+    return None
 
+def handle_document_upload(document, chat_id, message_id):
+    file_content = download_telegram_file(document.file_id)
+    document.file_content = file_content
+    print(f"Downloaded file of size: {len(file_content) if file_content else 'None'} bytes")
+    try:
+        file_id = upload_file_to_rag(document)
+        if file_id:
+            reply_message = f"File uploaded successfully. And the assigned file_id is: {file_id}\nYou can now ask questions related to the document."
+        else:
+            print("Failed to upload file to RAG service. Please try again.")
+            reply_message = "Failed to upload the file. Please try again."
+        send_message(chat_id, reply_message, message_id)
+    except TypeError as e:
+        print(e)
+        reply_message = e.args[0]
+        send_message(chat_id, reply_message, message_id)
+
+def handle_question(question, chat_id, message_id):
+    if question.strip().lower().startswith("/delete"):
+        file_id = question.split(" ")[1].strip()
+        delete_file_from_rag(int(file_id))
+        reply_message = f"File deleted successfully with file_id: {file_id}"
+        send_message(chat_id, reply_message, message_id)
+    else:
         try:
-            file_id = upload_file_to_rag(document)
-            if file_id:
-                reply_message = f"File uploaded successfully. And the assigned file_id is: {file_id}\nYou can now ask questions related to the document."
+            session_id = get_session_id(chat_id)
+            response = ask_rag(question, session_id)
+            if response:
+                insert_chat_details(chat_id, response.session_id)
+                send_message(chat_id, response.answer, message_id)
             else:
-                print(f"Failed to upload file to RAG service. Please try again.")
-                reply_message = "Failed to upload the file. Please try again."
-            send_message(chat_id, reply_message, message_id)
-        except TypeError as e:
+                reply_message = "Unable to Process your Question, Due to Internal Error"
+                send_message(chat_id, reply_message, message_id)
+        except GoogleGenerativeAIError as e:
             print(e)
             reply_message = e.args[0]
             send_message(chat_id, reply_message, message_id)
-    elif question:
-        if(question.strip().lower().startswith("/delete")):
-            file_id = question.split(" ")[1].strip()
-            delete_file_from_rag(int(file_id))
-            reply_message = f"File deleted successfully with file_id: {file_id}"
-            send_message(chat_id, reply_message, message_id)
-        else:
-            try:
-                session_id = get_session_id(chat_id)
-                response = ask_rag(question, session_id)
-                if response:
-                    insert_chat_details(chat_id, response.session_id)
-                    send_message(chat_id, response.answer, message_id)
-                else:
-                    reply_message = "Unable to Process your Question, Due to Internal Error"
-                    send_message(chat_id, reply_message, message_id)
-            except GoogleGenerativeAIError as e:
-                print(e)
-                reply_message = e.args[0]
-                send_message(chat_id, reply_message, message_id)
-                return None
-    return None
+            return None
 
 
 def ask_rag(question: str, session_id: str = None) -> RagResponse:
@@ -88,7 +92,7 @@ def upload_file_to_rag(file: Document) -> str:
             reply_message = f"Failed to upload file to RAG service: {response.text}"
             raise TypeError(reply_message)
 
-def delete_file_from_rag(file_id: str) -> bool:
+def delete_file_from_rag(file_id: int) -> bool:
     url = f"{rag_url}/delete-doc"
     payload = {"file_id": file_id}
 
