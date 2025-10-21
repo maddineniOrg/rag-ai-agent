@@ -96,12 +96,16 @@ def delete_file_from_rag(file_id: int) -> bool:
     url = f"{rag_url}/delete-doc"
     payload = {"file_id": file_id}
 
-    with httpx.Client() as client:
-        # use request() so we can send JSON in DELETE
-        response = client.request("DELETE", url, json=payload)
+    try:
+        with httpx.Client() as client:
+            # use request() so we can send JSON in DELETE
+            response = client.request("DELETE", url, json=payload)
 
-        if response.status_code == 200:
-            return True
-        else:
-            print(f"Failed to delete file from RAG service: {response.text}")
-            return False
+            if response.status_code == 200:
+                return True
+            else:
+                print(f"Failed to delete file from RAG service: {response.text}")
+                return False
+    except Exception as e:
+        print(f"Failed to delete file from RAG service: {e}")
+        return False
