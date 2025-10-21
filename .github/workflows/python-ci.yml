@@ -2,9 +2,10 @@ name: Python CI + SonarCloud
 
 on:
   push:
-    branches: [ main ]
+    branches: [ main ]            # Build only when code is pushed to main
   pull_request:
-    branches: [ main ]
+    branches: [ "*" ]             # Build for PRs targeting ANY branch
+  workflow_dispatch:              # Optional: allows manual trigger from GitHub UI
 
 jobs:
   build:
@@ -14,7 +15,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0  # Required for Sonar analysis (full git history)
+          fetch-depth: 0  # Required for full SonarCloud analysis
 
       - name: Set up Python
         uses: actions/setup-python@v5
