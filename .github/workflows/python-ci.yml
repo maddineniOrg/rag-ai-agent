@@ -2,10 +2,10 @@ name: Python CI + SonarCloud
 
 on:
   push:
-    branches: [ main ]            # Build only when code is pushed to main
+    branches: [ "*" ]          # Run for all branches
   pull_request:
-    branches: [ "*" ]             # Build for PRs targeting ANY branch
-  workflow_dispatch:              # Optional: allows manual trigger from GitHub UI
+    branches: [ "*" ]          # Run for all PRs
+  workflow_dispatch:            # Optional manual trigger
 
 jobs:
   build:
@@ -25,8 +25,8 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
-          pip install pytest coverage
+          pip install -r requirements.txt || true
+          pip install pytest coverage pytest-cov
 
       - name: Run tests and generate coverage
         run: |
@@ -40,6 +40,11 @@ jobs:
             -Dsonar.organization=maddineniOrg
             -Dsonar.projectKey=rag-ai-agent
             -Dsonar.python.coverage.reportPaths=coverage.xml
+            -Dsonar.sources=.
+            -Dsonar.branch.name=${{ github.head_ref || github.ref_name }}
+            -Dsonar.pullrequest.key=${{ github.event.pull_request.number }}
+            -Dsonar.pullrequest.branch=${{ github.head_ref }}
+            -Dsonar.pullrequest.base=${{ github.base_ref }}
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
